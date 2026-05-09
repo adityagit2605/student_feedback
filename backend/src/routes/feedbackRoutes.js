@@ -12,12 +12,12 @@ const {
 /**
  * Feedback Routes
  *
- * POST   /api/feedback                    - Submit feedback for a course
+ * POST   /api/feedback                    - Submit feedback for a course (auth required)
+ * GET    /api/feedback/me                 - Get my feedbacks (auth required)
  * GET    /api/feedback/course/:id         - Get all feedback for a specific course
  * GET    /api/feedback/course/:id/average - Get average rating for a course
  * GET    /api/feedback/:id                - Get a single feedback by ID
- * DELETE /api/feedback/:id                - Delete a feedback
- * GET    /api/feedback/me                 - Get my feedbacks
+ * DELETE /api/feedback/:id                - Delete a feedback (auth required, owner or admin)
  */
 
 router.get("/me", protect, asyncHandler(feedbackController.getMyFeedbacks));
@@ -53,6 +53,7 @@ router.get(
 
 router.delete(
   "/:id",
+  protect,
   idParamValidator,
   handleValidationErrors,
   asyncHandler(feedbackController.deleteFeedback)

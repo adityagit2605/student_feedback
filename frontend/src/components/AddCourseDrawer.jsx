@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { X, BookPlus } from 'lucide-react';
 import { createCourse } from '../api';
 
-const AddCourseDrawer = ({ onClose }) => {
+const AddCourseDrawer = ({ onClose, onSuccess }) => {
   const [formData, setFormData] = useState({
     courseName: '',
     description: '',
@@ -23,9 +23,14 @@ const AddCourseDrawer = ({ onClose }) => {
         credits: parseInt(formData.credits)
       });
       onClose();
-      window.location.reload(); // Quick refresh to show new course
+      if (onSuccess) onSuccess();
     } catch (err) {
-      setError(err.response?.data?.error?.message || 'Failed to create course.');
+      const msg = err.response?.data?.error?.message || 'Failed to create course.';
+      if (err.response?.status === 403) {
+        setError('Only administrators can create courses.');
+      } else {
+        setError(msg);
+      }
     } finally {
       setLoading(false);
     }

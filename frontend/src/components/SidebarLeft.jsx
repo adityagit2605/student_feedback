@@ -1,4 +1,3 @@
-import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { BookOpen, LayoutDashboard, MessageSquarePlus, Settings } from 'lucide-react';
 import './Layout.css';
@@ -26,7 +25,6 @@ const SidebarLeft = () => {
           <BookOpen size={20} />
           Courses
         </NavLink>
-        {/* Updated links to actual paths */}
         <NavLink 
           to="/my-feedbacks" 
           className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}

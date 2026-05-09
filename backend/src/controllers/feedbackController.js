@@ -7,7 +7,18 @@ const { AppError } = require("../middleware/errorHandler");
  */
 async function submitFeedback(req, res) {
   const { rating, comments, courseId } = req.body;
-  const studentName = req.user.name;
+
+  // Get the authenticated user's name from the database for reliability
+  const user = await prisma.user.findUnique({
+    where: { id: req.user.id },
+    select: { name: true },
+  });
+
+  if (!user) {
+    throw new AppError("Authenticated user not found", 404);
+  }
+
+  const studentName = user.name;
 
   // Verify the course exists
   const course = await prisma.course.findUnique({
@@ -172,7 +183,7 @@ async function getFeedbackById(req, res) {
 }
 
 /**
- * @desc    Delete a feedback by ID
+ * @desc    Delete a feedback by ID (owner or admin only)
  * @route   DELETE /api/feedback/:id
  */
 async function deleteFeedback(req, res) {
@@ -181,6 +192,16 @@ async function deleteFeedback(req, res) {
   const existing = await prisma.feedback.findUnique({ where: { id } });
   if (!existing) {
     throw new AppError("Feedback not found", 404);
+  }
+
+  // Only allow the feedback owner or an admin to delete
+  const user = await prisma.user.findUnique({
+    where: { id: req.user.id },
+    select: { name: true, role: true },
+  });
+
+  if (user.role !== 'admin' && existing.studentName !== user.name) {
+    throw new AppError("You can only delete your own feedback", 403);
   }
 
   await prisma.feedback.delete({ where: { id } });
@@ -201,8 +222,17 @@ async function getMyFeedbacks(req, res) {
   const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 10));
   const skip = (page - 1) * limit;
 
-  // Assuming studentName is the user's name
-  const studentName = req.user.name;
+  // Get user's name from the database
+  const user = await prisma.user.findUnique({
+    where: { id: req.user.id },
+    select: { name: true },
+  });
+
+  if (!user) {
+    throw new AppError("User not found", 404);
+  }
+
+  const studentName = user.name;
 
   const [feedbacks, totalCount] = await Promise.all([
     prisma.feedback.findMany({
@@ -212,7 +242,7 @@ async function getMyFeedbacks(req, res) {
       orderBy: { createdAt: 'desc' },
       include: {
         course: {
-          select: { courseName: true }
+          select: { id: true, courseName: true }
         }
       }
     }),

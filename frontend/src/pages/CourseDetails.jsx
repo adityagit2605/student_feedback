@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, User, Calendar, BookOpen, Star, MessageSquare } from 'lucide-react';
 import { fetchCourseById } from '../api';
@@ -15,8 +15,8 @@ const CourseDetails = () => {
       try {
         const response = await fetchCourseById(id);
         setCourse(response.data);
-      } catch (err) {
-        setError('Failed to load course details.');
+      } catch {
+        setError('Failed to load course details. Please try again later.');
       } finally {
         setLoading(false);
       }

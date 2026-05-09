@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Book, Star, ArrowRight, Search } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { useNavigate, useOutletContext } from 'react-router-dom';
+import { Star, ArrowRight, Search } from 'lucide-react';
 import { fetchCourses } from '../api';
 
 const Courses = () => {
+  const { refreshKey } = useOutletContext();
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -12,6 +13,7 @@ const Courses = () => {
   useEffect(() => {
     const loadCourses = async () => {
       try {
+        setLoading(true);
         const response = await fetchCourses({ search: searchTerm, limit: 100 });
         setCourses(response.data);
       } catch (error) {
@@ -23,7 +25,7 @@ const Courses = () => {
 
     const timer = setTimeout(loadCourses, 300);
     return () => clearTimeout(timer);
-  }, [searchTerm]);
+  }, [searchTerm, refreshKey]);
 
   const renderStars = (rating) => {
     if (!rating) return <span className="text-small">No ratings yet</span>;
@@ -77,7 +79,7 @@ const Courses = () => {
                 <div>
                   {renderStars(course.averageRating)}
                   <span className="text-small" style={{ display: 'block', marginTop: '0.25rem' }}>
-                    {course.feedbackCount} reviews
+                    {course.feedbackCount} {course.feedbackCount === 1 ? 'review' : 'reviews'}
                   </span>
                 </div>
                 <button 

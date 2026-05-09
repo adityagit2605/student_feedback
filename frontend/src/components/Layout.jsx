@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Outlet } from 'react-router-dom';
 import SidebarLeft from './SidebarLeft';
 import SidebarRight from './SidebarRight';
@@ -9,13 +9,18 @@ import './Layout.css';
 const Layout = () => {
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
   const [isAddCourseDrawerOpen, setIsAddCourseDrawerOpen] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const triggerRefresh = useCallback(() => {
+    setRefreshKey(prev => prev + 1);
+  }, []);
 
   return (
     <div className="layout-container">
       <SidebarLeft />
       
       <main className="main-content">
-        <Outlet />
+        <Outlet context={{ refreshKey }} />
       </main>
 
       <SidebarRight 
@@ -24,11 +29,17 @@ const Layout = () => {
       />
 
       {isFeedbackModalOpen && (
-        <SubmitFeedbackModal onClose={() => setIsFeedbackModalOpen(false)} />
+        <SubmitFeedbackModal
+          onClose={() => setIsFeedbackModalOpen(false)}
+          onSuccess={triggerRefresh}
+        />
       )}
 
       {isAddCourseDrawerOpen && (
-        <AddCourseDrawer onClose={() => setIsAddCourseDrawerOpen(false)} />
+        <AddCourseDrawer
+          onClose={() => setIsAddCourseDrawerOpen(false)}
+          onSuccess={triggerRefresh}
+        />
       )}
     </div>
   );

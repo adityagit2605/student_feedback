@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, useContext } from 'react';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import { Search, Book, MessageSquare, Star, ArrowRight } from 'lucide-react';
 import { fetchCourses } from '../api';
 import { AuthContext } from '../context/AuthContext';
@@ -7,6 +7,7 @@ import './Dashboard.css';
 
 const Dashboard = () => {
   const { user } = useContext(AuthContext);
+  const { refreshKey } = useOutletContext();
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -16,6 +17,7 @@ const Dashboard = () => {
   useEffect(() => {
     const loadData = async () => {
       try {
+        setLoading(true);
         const response = await fetchCourses({ search: searchTerm, limit: 100 });
         const courseData = response.data;
         setCourses(courseData);
@@ -45,7 +47,7 @@ const Dashboard = () => {
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [searchTerm]);
+  }, [searchTerm, refreshKey]);
 
   const renderStars = (rating) => {
     if (!rating) return <span className="text-small">No ratings yet</span>;
@@ -96,7 +98,7 @@ const Dashboard = () => {
           </div>
           <div>
             <p className="text-small">Platform Avg Rating</p>
-            <h2 className="text-h2">{stats.avgRating} <span style={{fontSize:'1rem', color:'var(--color-text-muted)'}}>/ 5</span></h2>
+            <h2 className="text-h2">{stats.avgRating} <span style={{fontSize:'1rem', color:'var(--color-text-muted)'}}> / 5</span></h2>
           </div>
         </div>
       </div>
@@ -140,7 +142,7 @@ const Dashboard = () => {
                   <div>
                     {renderStars(course.averageRating)}
                     <span className="text-small" style={{ display: 'block', marginTop: '0.25rem' }}>
-                      {course.feedbackCount} reviews
+                      {course.feedbackCount} {course.feedbackCount === 1 ? 'review' : 'reviews'}
                     </span>
                   </div>
                   <button 

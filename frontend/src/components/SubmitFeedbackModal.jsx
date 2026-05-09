@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Star } from 'lucide-react';
 import { fetchCourses, submitFeedback } from '../api';
 
-const SubmitFeedbackModal = ({ onClose }) => {
+const SubmitFeedbackModal = ({ onClose, onSuccess }) => {
   const [courses, setCourses] = useState([]);
   const [formData, setFormData] = useState({
     courseId: '',
-    studentName: '',
     rating: 0,
     comments: ''
   });
@@ -18,13 +17,13 @@ const SubmitFeedbackModal = ({ onClose }) => {
   useEffect(() => {
     fetchCourses({ limit: 100 })
       .then(res => setCourses(res.data))
-      .catch(err => setError('Failed to load courses.'));
+      .catch(() => setError('Failed to load courses.'));
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.courseId || !formData.studentName || !formData.rating || !formData.comments) {
-      setError('Please fill in all fields and select a rating.');
+    if (!formData.courseId || !formData.rating || !formData.comments.trim()) {
+      setError('Please select a course, choose a rating, and write your comments.');
       return;
     }
 
@@ -32,14 +31,14 @@ const SubmitFeedbackModal = ({ onClose }) => {
     setError(null);
     try {
       await submitFeedback({
-        ...formData,
-        courseId: parseInt(formData.courseId)
+        courseId: parseInt(formData.courseId),
+        rating: formData.rating,
+        comments: formData.comments.trim(),
       });
       setSuccess(true);
       setTimeout(() => {
         onClose();
-        // Option to trigger a global refresh event here
-        window.location.reload(); 
+        if (onSuccess) onSuccess();
       }, 1500);
     } catch (err) {
       setError(err.response?.data?.error?.message || 'Failed to submit feedback.');
@@ -65,7 +64,7 @@ const SubmitFeedbackModal = ({ onClose }) => {
           </div>
         ) : (
           <form onSubmit={handleSubmit}>
-            {error && <div style={{ color: 'var(--color-accent-red)', marginBottom: '1rem', fontSize: '0.9rem' }}>{error}</div>}
+            {error && <div style={{ color: 'var(--color-accent-red)', marginBottom: '1rem', fontSize: '0.9rem', padding: '0.75rem', background: '#fee2e2', borderRadius: '8px' }}>{error}</div>}
             
             <div className="form-group">
               <label className="form-label">Course</label>
