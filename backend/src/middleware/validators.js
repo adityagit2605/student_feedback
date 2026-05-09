@@ -89,12 +89,6 @@ const courseUpdateValidationRules = [
  * Validation rules for feedback submission
  */
 const feedbackValidationRules = [
-  body("studentName")
-    .trim()
-    .notEmpty()
-    .withMessage("Student name is required")
-    .isLength({ max: 100 })
-    .withMessage("Student name must be at most 100 characters"),
 
   body("rating")
     .isInt({ min: 1, max: 5 })

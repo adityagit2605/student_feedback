@@ -26,15 +26,21 @@ const SidebarLeft = () => {
           <BookOpen size={20} />
           Courses
         </NavLink>
-        {/* Placeholder links to mimic full dashboard feel */}
-        <div className="nav-item">
+        {/* Updated links to actual paths */}
+        <NavLink 
+          to="/my-feedbacks" 
+          className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+        >
           <MessageSquarePlus size={20} />
           My Feedbacks
-        </div>
-        <div className="nav-item">
+        </NavLink>
+        <NavLink 
+          to="/settings" 
+          className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+        >
           <Settings size={20} />
           Settings
-        </div>
+        </NavLink>
       </nav>
     </aside>
   );

@@ -1,16 +1,19 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { User, Plus, Star } from 'lucide-react';
+import { AuthContext } from '../context/AuthContext';
 import './Layout.css';
 
 const SidebarRight = ({ onAddCourse, onSubmitFeedback }) => {
+  const { user } = useContext(AuthContext);
+
   return (
     <aside className="sidebar-right">
       <div className="profile-section">
         <div className="profile-avatar">
-          <User size={32} />
+          {user ? user.name.charAt(0).toUpperCase() : <User size={32} />}
         </div>
-        <h3 className="text-h3" style={{ marginBottom: '0.25rem' }}>Aditya Pandey</h3>
-        <p className="text-small">System Administrator</p>
+        <h3 className="text-h3" style={{ marginBottom: '0.25rem' }}>{user ? user.name : 'Guest'}</h3>
+        <p className="text-small">{user ? (user.role === 'admin' ? 'System Administrator' : 'Student') : ''}</p>
       </div>
 
       <div className="quick-actions">

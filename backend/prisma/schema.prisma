@@ -31,3 +31,12 @@ model Feedback {
   courseId     Int
   course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
 }
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("student") // "admin" or "student"
+  createdAt DateTime @default(now())
+}

@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const feedbackController = require("../controllers/feedbackController");
 const { asyncHandler } = require("../middleware/errorHandler");
+const { protect } = require("../middleware/auth");
 const {
   feedbackValidationRules,
   idParamValidator,
@@ -16,10 +17,14 @@ const {
  * GET    /api/feedback/course/:id/average - Get average rating for a course
  * GET    /api/feedback/:id                - Get a single feedback by ID
  * DELETE /api/feedback/:id                - Delete a feedback
+ * GET    /api/feedback/me                 - Get my feedbacks
  */
+
+router.get("/me", protect, asyncHandler(feedbackController.getMyFeedbacks));
 
 router.post(
   "/",
+  protect,
   feedbackValidationRules,
   handleValidationErrors,
   asyncHandler(feedbackController.submitFeedback)

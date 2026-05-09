@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Book, MessageSquare, Star, ArrowRight } from 'lucide-react';
 import { fetchCourses } from '../api';
+import { AuthContext } from '../context/AuthContext';
 import './Dashboard.css';
 
 const Dashboard = () => {
+  const { user } = useContext(AuthContext);
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -60,7 +62,7 @@ const Dashboard = () => {
         <div className="welcome-banner">
           <div style={{ position: 'relative', zIndex: 1 }}>
             <h1 className="text-h1" style={{ color: 'var(--color-primary-dark)', marginBottom: '0.5rem' }}>
-              Welcome back, Administrator!
+              Welcome back, {user ? user.name.split(' ')[0] : 'Student'}!
             </h1>
             <p style={{ color: '#475569', maxWidth: '600px', lineHeight: 1.6 }}>
               You are just a few steps away from completing your semester evaluations. Check the latest course feedback and keep track of student satisfaction. You can do this!

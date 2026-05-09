@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, User, Calendar, BookOpen, Star } from 'lucide-react';
+import { ArrowLeft, User, Calendar, BookOpen, Star, MessageSquare } from 'lucide-react';
 import { fetchCourseById } from '../api';
 import './CourseDetails.css';
 

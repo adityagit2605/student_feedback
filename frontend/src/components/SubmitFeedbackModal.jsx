@@ -82,17 +82,6 @@ const SubmitFeedbackModal = ({ onClose }) => {
             </div>
 
             <div className="form-group">
-              <label className="form-label">Your Name</label>
-              <input 
-                type="text" 
-                className="input-field" 
-                placeholder="John Doe"
-                value={formData.studentName}
-                onChange={e => setFormData({...formData, studentName: e.target.value})}
-              />
-            </div>
-
-            <div className="form-group">
               <label className="form-label">Rating</label>
               <div style={{ display: 'flex', gap: '0.5rem' }}>
                 {[1, 2, 3, 4, 5].map((star) => (

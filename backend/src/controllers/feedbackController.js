@@ -6,7 +6,8 @@ const { AppError } = require("../middleware/errorHandler");
  * @route   POST /api/feedback
  */
 async function submitFeedback(req, res) {
-  const { studentName, rating, comments, courseId } = req.body;
+  const { rating, comments, courseId } = req.body;
+  const studentName = req.user.name;
 
   // Verify the course exists
   const course = await prisma.course.findUnique({
@@ -190,10 +191,53 @@ async function deleteFeedback(req, res) {
   });
 }
 
+/**
+ * @desc    Get feedbacks for the logged in user
+ * @route   GET /api/feedback/me
+ */
+async function getMyFeedbacks(req, res) {
+  // Pagination
+  const page = Math.max(1, parseInt(req.query.page) || 1);
+  const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 10));
+  const skip = (page - 1) * limit;
+
+  // Assuming studentName is the user's name
+  const studentName = req.user.name;
+
+  const [feedbacks, totalCount] = await Promise.all([
+    prisma.feedback.findMany({
+      where: { studentName },
+      skip,
+      take: limit,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        course: {
+          select: { courseName: true }
+        }
+      }
+    }),
+    prisma.feedback.count({ where: { studentName } }),
+  ]);
+
+  const totalPages = Math.ceil(totalCount / limit);
+
+  res.json({
+    success: true,
+    data: feedbacks,
+    pagination: {
+      currentPage: page,
+      totalPages,
+      totalCount,
+      limit,
+    },
+  });
+}
+
 module.exports = {
   submitFeedback,
   getFeedbackByCourse,
   getAverageRating,
   getFeedbackById,
   deleteFeedback,
+  getMyFeedbacks,
 };

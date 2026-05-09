@@ -45,6 +45,7 @@ app.get("/api/health", async (req, res) => {
 // ─── API Routes ─────────────────────────────────────────────────────────────
 app.use("/api/courses", courseRoutes);
 app.use("/api/feedback", feedbackRoutes);
+app.use("/api/auth", require("./routes/authRoutes"));
 
 // ─── API Documentation (Root) ───────────────────────────────────────────────
 app.get("/", (req, res) => {
