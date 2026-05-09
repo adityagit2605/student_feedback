@@ -1,0 +1,33 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Course {
+  id             Int        @id @default(autoincrement())
+  courseName     String
+  description    String
+  instructorName String
+  credits        Int
+
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  feedbacks      Feedback[]
+}
+
+model Feedback {
+  id          Int      @id @default(autoincrement())
+  studentName String
+  rating      Int      // 1-5 scale, validated at application level
+  comments    String
+
+  createdAt   DateTime @default(now())
+
+  courseId     Int
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+}
