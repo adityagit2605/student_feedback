@@ -1,3 +1,7 @@
+databases:
+  - name: student-feedback-db
+    plan: free
+
 services:
   - type: web
     name: student-feedback-backend
@@ -24,7 +28,3 @@ services:
     envVars:
       - key: VITE_API_URL
         sync: false
-
-  - type: psql
-    name: student-feedback-db
-    plan: free
