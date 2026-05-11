@@ -24,7 +24,7 @@ app.use(
     origin: function (origin, callback) {
       // Allow requests with no origin (mobile apps, curl, etc.)
       if (!origin) return callback(null, true);
-      
+
       // In development, be permissive to avoid 127.0.0.1 vs localhost issues
       if (process.env.NODE_ENV !== 'production') {
         return callback(null, true);
@@ -85,7 +85,7 @@ app.use("/api/auth", require("./routes/authRoutes"));
 if (process.env.NODE_ENV === "production") {
   const frontendPath = path.join(__dirname, "../../frontend/dist");
   app.use(express.static(frontendPath));
-  app.get("*", (req, res) => {
+  app.get(/.*/, (req, res) => {
     res.sendFile(path.join(frontendPath, "index.html"));
   });
 } else {
