@@ -81,59 +81,50 @@ app.use("/api/courses", courseRoutes);
 app.use("/api/feedback", feedbackRoutes);
 app.use("/api/auth", require("./routes/authRoutes"));
 
-// ─── Serve Frontend in Production ───────────────────────────────────────────
-if (process.env.NODE_ENV === "production") {
-  const frontendPath = path.join(__dirname, "../../frontend/dist");
-  app.use(express.static(frontendPath));
-  app.get(/.*/, (req, res) => {
-    res.sendFile(path.join(frontendPath, "index.html"));
-  });
-} else {
-  // ─── API Documentation (Root) — Development Only ────────────────────────
-  app.get("/", (req, res) => {
-    res.json({
-      success: true,
-      message: "📚 Student Course Feedback API",
-      version: "1.0.0",
-      endpoints: {
-        health: "GET /api/health",
-        auth: {
-          register: "POST /api/auth/register",
-          login: "POST /api/auth/login",
-          me: "GET /api/auth/me",
-          updateProfile: "PUT /api/auth/profile",
-          changePassword: "PUT /api/auth/password",
-        },
-        courses: {
-          getAll: "GET /api/courses?page=1&limit=10&search=&sortBy=createdAt&order=desc",
-          getOne: "GET /api/courses/:id",
-          create: "POST /api/courses (auth required)",
-          fullUpdate: "PUT /api/courses/:id (admin only)",
-          partialUpdate: "PATCH /api/courses/:id (admin only)",
-          delete: "DELETE /api/courses/:id (admin only)",
-        },
-        feedback: {
-          submit: "POST /api/feedback (auth required)",
-          myFeedbacks: "GET /api/feedback/me (auth required)",
-          getByCourse: "GET /api/feedback/course/:id?page=1&limit=10&rating=&sortBy=createdAt&order=desc",
-          getAverage: "GET /api/feedback/course/:id/average",
-          getOne: "GET /api/feedback/:id",
-          delete: "DELETE /api/feedback/:id (auth required, owner or admin)",
-        },
+// ─── API Documentation (Root) ───────────────────────────────────────────────
+app.get("/", (req, res) => {
+  res.json({
+    success: true,
+    message: "📚 Student Course Feedback API",
+    version: "1.0.0",
+    endpoints: {
+      health: "GET /api/health",
+      auth: {
+        register: "POST /api/auth/register",
+        login: "POST /api/auth/login",
+        me: "GET /api/auth/me",
+        updateProfile: "PUT /api/auth/profile",
+        changePassword: "PUT /api/auth/password",
       },
-    });
+      courses: {
+        getAll: "GET /api/courses?page=1&limit=10&search=&sortBy=createdAt&order=desc",
+        getOne: "GET /api/courses/:id",
+        create: "POST /api/courses (auth required)",
+        fullUpdate: "PUT /api/courses/:id (admin only)",
+        partialUpdate: "PATCH /api/courses/:id (admin only)",
+        delete: "DELETE /api/courses/:id (admin only)",
+      },
+      feedback: {
+        submit: "POST /api/feedback (auth required)",
+        myFeedbacks: "GET /api/feedback/me (auth required)",
+        getByCourse: "GET /api/feedback/course/:id?page=1&limit=10&rating=&sortBy=createdAt&order=desc",
+        getAverage: "GET /api/feedback/course/:id/average",
+        getOne: "GET /api/feedback/:id",
+        delete: "DELETE /api/feedback/:id (auth required, owner or admin)",
+      },
+    },
   });
+});
 
-  // ─── 404 Handler ──────────────────────────────────────────────────────────
-  app.use((req, res) => {
-    res.status(404).json({
-      success: false,
-      error: {
-        message: `Route ${req.method} ${req.originalUrl} not found`,
-      },
-    });
+// ─── 404 Handler ──────────────────────────────────────────────────────────
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    error: {
+      message: `Route ${req.method} ${req.originalUrl} not found`,
+    },
   });
-}
+});
 
 // ─── Global Error Handler ───────────────────────────────────────────────────
 app.use(errorHandler);
